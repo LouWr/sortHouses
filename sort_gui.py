@@ -7,9 +7,9 @@ import re
 # Create a Tkinter window
 window = tk.Tk()
 
-# Define a function to handle the "Open File" button click event
+
 def open_file():
-    # Use file dialog to allow user to select a CSV file
+    # User dropped file - assign filename below
     filepath = filedialog.askopenfilename(
         filetypes=[("CSV Files", "*.csv")],
         title="Select a CSV file"
@@ -69,7 +69,7 @@ def open_file():
             first_characters_of_postcode = most_expensive_postcode.split()
             return f'The most expensive postcode is:\n {first_characters_of_postcode[0]}\n'
             
-        # Define functions to handle button clicks
+        # onClick button functions
         def handle_high_click():
             result_text.delete("1.0", tk.END) # clear previous result
             result_text.insert(tk.END, sort_by_price_high())
@@ -82,7 +82,7 @@ def open_file():
             result_text.delete("1.0", tk.END)
             result_text.insert(tk.END, find_most_expensive_postcode())
 
-        # Create buttons to manipulate the data
+        # add buttons to window and add commands
         high_button = tk.Button(window, text="Sort by Price (High to Low)", command=handle_high_click)
         high_button.pack()
 
@@ -92,13 +92,13 @@ def open_file():
         most_expensive_postcode_button = tk.Button(window, text="Find Most Expensive Postcode", command=handle_most_expensive_postcode)
         most_expensive_postcode_button.pack()
 
-# Create a button to open the file dialog
+# button to open file - command + text
 open_button = tk.Button(window, text="Open File", command=open_file)
 open_button.pack()
 
-# Create a text box to display the results
+# text box to displayu
 result_text = tk.Text(window, height=50, width=100)
 result_text.pack()
 
-# Start the Tkinter event loop
+
 window.mainloop()
