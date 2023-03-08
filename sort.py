@@ -26,33 +26,44 @@ def remove_non_numeric(string):
     return re.sub(r'\D', '', string)
 
 # sort the data by price
-def sort_by_price_high(data):
-    data.iloc[:, price_index] = data.iloc[:, price_index].apply(remove_non_numeric).astype(int)
+def sort_by_price_high():
+    # try except added to check code only applied to string values - error thrown on ints and code not necessary
+    try: 
+        data[data.columns[price_index]] = data[data.columns[price_index]].apply(remove_non_numeric).astype(int)
+    except:
+        pass
     data_sorted_high = data.sort_values(data.columns[price_index], ascending=False)
-    return data_sorted_high.head(5)
+    return f'The 5 highest selling:\n {data_sorted_high.head(5)}\n'
 
 # sort price from low to high
-def sort_by_price_low(data):
-    data.iloc[:, price_index] = data.iloc[:, price_index].apply(remove_non_numeric).astype(int)
-    #data[data.columns[price_index]] = data[data.columns[price_index]].apply(remove_non_numeric).astype(int)
+def sort_by_price_low():
+    # try except added to check code only applied to string values - error thrown on ints and code not necessary
+    try:
+        data[data.columns[price_index]] = data[data.columns[price_index]].apply(remove_non_numeric).astype(int)
+    except:
+         pass
     data_sorted_low = data.sort_values(data.columns[price_index], ascending=True)
-    return data_sorted_low.head(5)
+    return f'The 5 lowest selling:\n {data_sorted_low.head(5)}\n'
 
 
 # find the most expensive postcode
 # iloc is used to get the column by index number rather than by string as could be issues with spaces etc
 def find_most_expensive_postcode():
-    data[data.columns[price_index]] = data[data.columns[price_index]].apply(remove_non_numeric).astype(int)
+    # try except added to check code only applied to string values - error thrown on ints and code not necessary
+    try:
+        data[data.columns[price_index]] = data[data.columns[price_index]].apply(remove_non_numeric).astype(int)
+    except:
+        pass
     # group by postcode and get the mean price
     grouped = data.groupby(data[data.columns[postcode_index]])[data.columns[price_index]].mean()
-    #grouped = data.groupby(data.iloc[:, postcode_index])[data.columns[price_index]].mean()
     sorted_prices = grouped.sort_values(ascending=False)
     most_expensive_postcode = sorted_prices.index[0]
     first_characters_of_postcode = most_expensive_postcode.split()
-    return first_characters_of_postcode[0]
+    return f'The most expensive postcode is:\n {first_characters_of_postcode[0]}\n'
 
 
 
-print(f'The 5 most expensive sales:\n {sort_by_price_high(data)}')
-print(f'The 5 least expensive sales:\n {sort_by_price_low(data)}')
-# print(f'The most expensive postcode by mean average:\n {find_most_expensive_postcode()}')
+
+print(sort_by_price_high())
+print(sort_by_price_low())
+print(find_most_expensive_postcode())
