@@ -9,12 +9,15 @@ csv = 'house_list.csv'
 with open(csv, 'rb') as f:
     result = chardet.detect(f.read())
 
-headers = ['address', 'postcode', 'price', 'price2', 'price3']
+headers = ['address', 'postcode', 'price', 'price2', 'price3', 'total_price']
 
 # pass the encoding to this function from above. 
 # error_bad_lines handles any bad formatting but this could cause issues with dataloss. Might be a smart way to format on input...
 data = pd.read_csv(csv, encoding=result['encoding'], on_bad_lines='skip',names=headers, header=None)
 
+# convert the price columns to strings - this is to remove .0 from the end of the numbers
+data.loc[data['price2'].notna(), 'price2'] = data.loc[data['price2'].notna(), 'price2'].astype(int).astype(str)
+data.loc[data['price3'].notna(), 'price3'] = data.loc[data['price3'].notna(), 'price3'].astype(int).astype(str)
 
 # get the headers - store in List for mutability
 headers = list(data.columns.values)
@@ -31,45 +34,47 @@ def remove_non_numeric(string):
 
 
 # get the total price of the house - add the three cols together and return the total in a new col
-def get_total_price():
+def get_total_price(data):
     for i in range(len(data)):
         # get the values of the price column and the two columns next to it for the current row
         price = str(data.iloc[i, 2])
-        col1 = str(data.iloc[i, 3])
-        col2 = str(data.iloc[i, 4])
-        
+        price2 = str(data.iloc[i, 3])
+        price3 = str(data.iloc[i, 4])
+
         # remove non-numeric characters from the price columns
         price = re.sub(r'\D', '', price)
-        col1 = re.sub(r'\D', '', col1)
-        col2 = re.sub(r'\D', '', col2)
-        
-        # convert the price columns to float and sum them up
-        total_price = price + col1 + col2
+        price2 = re.sub(r'\D', '', price2)
+        price3 = re.sub(r'\D', '', price3)
+
+        total_price = price + price2 + price3
         
         # assign the total price to the new "total_price" column for the current row
         data.at[i, 'total_price'] = total_price
         
     return data
+get_total_price(data)
 
 
-# print(get_total_price())
+data['total_price'] = pd.to_numeric(data['total_price'])
+data = data.sort_values(by='total_price', ascending=False)
+print(data['total_price'])
 
-# print(data['total_price'])
+
 
 
 
 # sort the data by price
-def sort_by_price_high():
+def sort_by_price_high(data):
     # try except added to check code only applied to string values - error thrown on ints and code not necessary
     try: 
-        data[data.columns['total_price']] = data[data.columns['total_price']].apply(remove_non_numeric).astype(int)
+        data['total_price'] = data['total_price'].astype(int)
     except:
         pass
     data_sorted_high = data.sort_values(data['total_price'], ascending=False)
     return f'The 5 highest selling:\n {data_sorted_high.head(5)}\n'
 
 
-print(sort_by_price_high())
+
 
 # sort price from low to high
 def sort_by_price_low():
